@@ -112,6 +112,32 @@ class Babbler:
         special symbol 'EOL' in the state transition table. 'EOL' is short for 'end of line'; since it is capitalized and all our input texts are lower-case, it will be unambiguous.
         """
 
+        sentence.lower().split()
+        print(sentence)
+
+        for i in range(0, len(sentence), 2):
+            if i == 0:
+                self.starters.append(sentence[i])
+            elif i == len(sentence)-1:
+                self.stoppers.append(sentence[i])
+                if sentence[i] not in self.brainGraph:
+                    self.brainGraph[sentence[i]] = ["EOL"]
+                else:
+                    self.brainGraph[sentence[i]] += ["EOL"]
+
+            if i < len(sentence)-3:
+                if sentence[i] not in self.brainGraph:
+                    self.brainGraph[sentence[i]] = [sentence[i+2]]
+                else:
+                    self.brainGraph[sentence[i]] += [sentence[i+2]]
+
+        # print(self.brainGraph)
+        # print(self.starters)
+        # print(self.stoppers)
+
+
+
+
         pass #The pass statement is used as a placeholder for future code. When the pass statement is executed, nothing happens, but you avoid getting an error when empty code is not allowed. Empty code is not allowed in loops, function definitions, class definitions, or in if statements.
 
 
