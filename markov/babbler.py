@@ -113,9 +113,11 @@ class Babbler:
         """
 
         sentence.lower().split()
-        print(sentence)
-
-        for i in range(0, len(sentence), 2):
+        # print(sentence)
+        #TODO: make it work for words not just letters
+        #enumerate? might need index and values
+        # for i, val in enumerate(sentence):
+        for i in range(0, len(sentence), 2): #2 might have to be changed to n
             if i == 0:
                 self.starters.append(sentence[i])
             elif i == len(sentence)-1:
@@ -131,10 +133,10 @@ class Babbler:
                 else:
                     self.brainGraph[sentence[i]] += [sentence[i+2]]
 
-        # print(self.brainGraph)
+        # print(type(self.brainGraph['a']))
         # print(self.starters)
         # print(self.stoppers)
-
+        # tuple(self.brainGraph.keys()) might have to change the type(seems like tuple) of the keys for the bigram > n-gram means unigram, bigram, 3gram ... n-gram
 
 
 
@@ -229,7 +231,7 @@ class Babbler:
             
 
 # nothing to change here; read, understand, move along
-def main(n=3, filename='tests/test1.txt', num_sentences=5):
+def main(n=3, filename='tests/test2.txt', num_sentences=5):
     """
     Simple test driver.
     """
@@ -264,7 +266,7 @@ if __name__ == '__main__':
     sys.argv.pop(0) # remove the first parameter, which should be babbler.py, the name of the script
     # -------default values -----------
     n = 3
-    filename = 'tests/test1.txt'
+    filename = 'tests/test2.txt'
     num_sentences = 5
     #----------------------------------
     if len(sys.argv) > 0: # if any argumetns are passed, first is assumed to be n
