@@ -103,7 +103,7 @@ digraph finite_state_machine {
 
 if __name__ == '__main__':
     n = 3
-    filename = 'tests/test2.txt'
+    filename = 'tests/test1.txt'
     sys.argv.pop(0)
     if len(sys.argv) > 0:
         n = int(sys.argv.pop(0))

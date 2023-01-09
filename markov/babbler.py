@@ -112,31 +112,34 @@ class Babbler:
         special symbol 'EOL' in the state transition table. 'EOL' is short for 'end of line'; since it is capitalized and all our input texts are lower-case, it will be unambiguous.
         """
 
-        sentence.lower().split()
-        # print(sentence)
-        #TODO: make it work for words not just letters
-        #enumerate? might need index and values
-        # for i, val in enumerate(sentence):
-        for i in range(0, len(sentence), 2): #2 might have to be changed to n
+        sentence = sentence.lower()
+        sent = sentence.split()
+
+        # make it work for N values
+        for i, val in enumerate(sent):
+            if i+n <= len(sent):
+                temp = [sent[j] for j in range(i, i + n)]
+                temp = ' '.join(temp)
+
             if i == 0:
-                self.starters.append(sentence[i])
-            elif i == len(sentence)-1:
-                self.stoppers.append(sentence[i])
-                if sentence[i] not in self.brainGraph:
-                    self.brainGraph[sentence[i]] = ["EOL"]
+                self.starters.append(temp)
+            elif i == len(sent) - 1:
+                self.stoppers.append(temp)
+                if temp not in self.brainGraph:
+                    self.brainGraph[temp] = ["EOL"]
                 else:
-                    self.brainGraph[sentence[i]] += ["EOL"]
+                    self.brainGraph[temp] += ["EOL"]
 
-            if i < len(sentence)-3:
-                if sentence[i] not in self.brainGraph:
-                    self.brainGraph[sentence[i]] = [sentence[i+2]]
+            if i < len(sent) - n:
+                if temp not in self.brainGraph:
+                    self.brainGraph[temp] = [sent[i + n]]
                 else:
-                    self.brainGraph[sentence[i]] += [sentence[i+2]]
+                    self.brainGraph[temp] += [sent[i + n]]
 
-        # print(type(self.brainGraph['a']))
-        # print(self.starters)
-        # print(self.stoppers)
-        # tuple(self.brainGraph.keys()) might have to change the type(seems like tuple) of the keys for the bigram > n-gram means unigram, bigram, 3gram ... n-gram
+        # print(type(self.brainGraph))
+        # print("Starters: ", self.starters)
+        # print("Stoppers: ", self.stoppers)
+
 
 
 
@@ -149,7 +152,7 @@ class Babbler:
         The resulting list may contain duplicates, because one n-gram may start
         multiple sentences. Probably a one-line method.
         """
-        pass
+        return self.starters
     
 
     def get_stoppers(self):
@@ -158,7 +161,7 @@ class Babbler:
         The resulting value may contain duplicates, because one n-gram may stop
         multiple sentences. Probably a one-line method.
         """
-        pass
+        return self.stoppers
 
 
     def get_successors(self, ngram):
@@ -173,8 +176,9 @@ class Babbler:
         If n=3, then the n-gram 'the dog dances' is followed by 'quickly' one time, and 'with' two times.
         If the given state never occurs, return an empty list.
         """
-
-        pass
+        for i in self.brainGraph.values():
+            ngram.append(i)
+        return ngram
     
 
     def get_all_ngrams(self):
@@ -183,7 +187,7 @@ class Babbler:
         Probably a one-line method.
         """
 
-        pass
+        return self.brainGraph.keys()
 
     
     def has_successor(self, ngram):
@@ -193,8 +197,13 @@ class Babbler:
         because ngrams with no successor words must not have occurred in the training sentences.
         Probably a one-line method.
         """
+        if ngram not in self.brainGraph:
+            return False
 
-        pass
+        if len(self.brainGraph[ngram]) == 1 and  self.brainGraph[ngram] == 'EOL':
+            return False
+        else:
+            return True
     
     
     def get_random_successor(self, ngram):
@@ -209,7 +218,8 @@ class Babbler:
         we should get 'quickly' about 1/3 of the time, and 'with' 2/3 of the time.
         """
 
-        pass
+        random_successor = random.choice(self.brainGraph[ngram])
+        return random_successor
     
 
     def babble(self):
@@ -226,12 +236,44 @@ class Babbler:
             Our example state is now: 'b c d' 
         6: Repeat from step 2.
         """
+        #initilze returned sentence
+        sentence = ''
+        #1. pick random starter
+        ngram = random.choice(self.starters)
 
-        pass
-            
+        #add starter to sentence
+        sentence += ngram
+
+        for _ in range(len(self.get_all_ngrams())):
+            #2. Choose random successor
+            if self.has_successor(ngram):
+                nextword = self.get_random_successor(ngram)
+            else:
+                return sentence
+            #3. If the successor word is 'EOL', return the current sentence.
+            if nextword == 'EOL':
+                return sentence
+            # 4. Otherwise, add the word to the end of the sentence
+            else:
+                # print("Next word: ", nextword)
+
+                sentence += " " + nextword
+                #5. Also add the word to the end of the current ngram, and remove the first word from the current ngram.
+                # Split the string into a list of words
+                ngram = ngram.split()
+                ngram.append(nextword)
+
+                # Remove the first word
+                ngram.pop(0)
+
+                # Join the words back into a string
+                ngram = " ".join(ngram)
+            #6. repeat from step 2
+
+
 
 # nothing to change here; read, understand, move along
-def main(n=3, filename='tests/test2.txt', num_sentences=5):
+def main(n=2, filename='tests/test1.txt', num_sentences=5):
     """
     Simple test driver.
     """
@@ -243,9 +285,9 @@ def main(n=3, filename='tests/test2.txt', num_sentences=5):
     try:
         print(f'num starters {len(babbler.get_starters())}')
         print("\t",babbler.get_starters())
-        print(f'num ngrams {len(babbler.get_all_ngrams())}')
         print(f'num stoppers {len(babbler.get_stoppers())}')
-        print("\t",babbler.get_stoppers())
+        print("\t", babbler.get_stoppers())
+        print(f'num ngrams {len(babbler.get_all_ngrams())}')
         print("------------------------------\nPreparing to drop some bars...\n")
         for _ in range(num_sentences):
             print(babbler.babble())
@@ -265,8 +307,8 @@ if __name__ == '__main__':
     print("Entered arguments: ",sys.argv)
     sys.argv.pop(0) # remove the first parameter, which should be babbler.py, the name of the script
     # -------default values -----------
-    n = 3
-    filename = 'tests/test2.txt'
+    n = 2
+    filename = 'tests/test1.txt'
     num_sentences = 5
     #----------------------------------
     if len(sys.argv) > 0: # if any argumetns are passed, first is assumed to be n
