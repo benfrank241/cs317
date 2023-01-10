@@ -1,11 +1,14 @@
 import sys
 from babbler import Babbler
 
+
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
+
 numnodes = 1
 names = {}
+
 
 def frequencies(items):
     counts = {}
@@ -16,6 +19,7 @@ def frequencies(items):
             counts[i] += 1
     return counts
 
+
 def percents(items):
     freqs = frequencies(items)
     percentages = {}
@@ -23,6 +27,7 @@ def percents(items):
     for key, count in freqs.items():
         percentages[key] = count / total
     return percentages
+
 
 def getnode(name):
     global numnodes
@@ -32,17 +37,19 @@ def getnode(name):
         numnodes += 1
     return names[name]
 
+
 def fix(state, word):
     if word is None:
         return None
     if ' ' not in state:
         return word
-    return state[state.index(' ')+1:] + ' ' + word
+    return state[state.index(' ') + 1:] + ' ' + word
+
 
 def main(n, filename):
     babbler = Babbler(n)
     babbler.add_file(filename)
-    
+
     st = ''
     startpct = percents(babbler.get_starters())
     for starter in startpct.keys():
@@ -65,13 +72,13 @@ def main(n, filename):
             continue
 
         eprint(f'{state} successors: {babbler.get_successors(state)}')
-        
+
         successors = [(word, fix(state, word)) for word in babbler.get_successors(state)]
         eprint(f'successors of {state}: {successors}')
-        
+
         successorpct = percents(successors)
         eprint(f'successorpct {successorpct}')
-        
+
         for (word, nextstate), weight in successorpct.items():
             if word == 'EOL':
                 links += f'{name} -> end [label = "{weight:.2f}" fontsize="36"];\n'
@@ -80,12 +87,11 @@ def main(n, filename):
             if nextname not in visited:
                 tovisit.append(nextstate)
             links += f'{name} -> {nextname} [label = "{word}\\n{weight:0.2f}" fontsize="36"];\n'
-    
+
     nodes = ''
     global names
     for state, name in names.items():
         nodes += f'{name} [label="{state}"];\n'
-
 
     graph = """
 digraph finite_state_machine {
@@ -100,6 +106,7 @@ digraph finite_state_machine {
     """ % (nodes, st, links)
 
     print(graph)
+
 
 if __name__ == '__main__':
     n = 3

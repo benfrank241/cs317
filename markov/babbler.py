@@ -273,7 +273,7 @@ class Babbler:
 
 
 # nothing to change here; read, understand, move along
-def main(n=2, filename='tests/test1.txt', num_sentences=5):
+def main(n=2, filename='tests/test3.txt', num_sentences=5):
     """
     Simple test driver.
     """
@@ -297,7 +297,7 @@ def main(n=2, filename='tests/test1.txt', num_sentences=5):
             " - review the crash report below\n"+
             " - add lots of print statements to your methods to ensure they are working as you intended\n")
         print("--------------------------Crash Report:--------------------------")
-        traceback.print_exc() 
+        traceback.print_exc()
 
 # nothing to change here; read, understand, move along
 # to execute this script, in a terminal nagivate to your cs317/markov folder, unless already there
@@ -308,7 +308,7 @@ if __name__ == '__main__':
     sys.argv.pop(0) # remove the first parameter, which should be babbler.py, the name of the script
     # -------default values -----------
     n = 2
-    filename = 'tests/test1.txt'
+    filename = 'tests/test3.txt'
     num_sentences = 5
     #----------------------------------
     if len(sys.argv) > 0: # if any argumetns are passed, first is assumed to be n
