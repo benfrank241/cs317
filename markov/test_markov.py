@@ -2,6 +2,7 @@ import unittest
 import warnings
 from babbler import Babbler
 
+
 class TestMarkovBabbler2(unittest.TestCase):
     def setUp(self):
         warnings.simplefilter("ignore")
@@ -51,7 +52,7 @@ class TestMarkovBabbler2(unittest.TestCase):
 class TestMarkovBabbler3(unittest.TestCase):
     def setUp(self):
         warnings.simplefilter("ignore")
-        self.babbler = Babbler(n)
+        self.babbler = Babbler(3)
         self.babbler.add_file('tests/test1.txt')
 
     def test_starters(self):

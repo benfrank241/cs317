@@ -115,10 +115,10 @@ class Babbler:
         sentence = sentence.lower()
         sent = sentence.split()
 
-        # make it work for N values
+
         for i, val in enumerate(sent):
-            if i+n <= len(sent):
-                temp = [sent[j] for j in range(i, i + n)]
+            if i+ self.n <= len(sent):
+                temp = [sent[j] for j in range(i, i + self.n)]
                 temp = ' '.join(temp)
 
             if i == 0:
@@ -130,16 +130,11 @@ class Babbler:
                 else:
                     self.brainGraph[temp] += ["EOL"]
 
-            if i < len(sent) - n:
+            if i < len(sent) - self.n:
                 if temp not in self.brainGraph:
-                    self.brainGraph[temp] = [sent[i + n]]
+                    self.brainGraph[temp] = [sent[i + self.n]]
                 else:
-                    self.brainGraph[temp] += [sent[i + n]]
-
-        # print(type(self.brainGraph))
-        # print("Starters: ", self.starters)
-        # print("Stoppers: ", self.stoppers)
-
+                    self.brainGraph[temp] += [sent[i + self.n]]
 
 
 
@@ -176,9 +171,7 @@ class Babbler:
         If n=3, then the n-gram 'the dog dances' is followed by 'quickly' one time, and 'with' two times.
         If the given state never occurs, return an empty list.
         """
-        for i in self.brainGraph.values():
-            ngram.append(i)
-        return ngram
+        return self.brainGraph[ngram]
     
 
     def get_all_ngrams(self):
