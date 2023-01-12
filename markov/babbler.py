@@ -117,7 +117,7 @@ class Babbler:
 
 
         for i, val in enumerate(sent):
-            if i+ self.n <= len(sent):
+            if i + self.n <= len(sent):
                 temp = [sent[j] for j in range(i, i + self.n)]
                 temp = ' '.join(temp)
 
@@ -128,7 +128,7 @@ class Babbler:
                 if temp not in self.brainGraph:
                     self.brainGraph[temp] = ["EOL"]
                 else:
-                    self.brainGraph[temp] += ["EOL"]
+                    self.brainGraph[temp] += ["EOL"] #innefficient becuase it creates a new string
 
             if i < len(sent) - self.n:
                 if temp not in self.brainGraph:
