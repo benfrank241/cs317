@@ -1,3 +1,5 @@
+#Code by Ben Bartholomew
+
 import random
 import glob
 import sys
@@ -117,22 +119,22 @@ class Babbler:
 
 
         for i, val in enumerate(sent):
-            if i + self.n <= len(sent):
-                temp = [sent[j] for j in range(i, i + self.n)]
-                temp = ' '.join(temp)
+            if i + self.n <= len(sent): #checks if n is longer than the sentence
+                temp = [sent[j] for j in range(i, i + self.n)] #gets n words, temp is the current state
+                temp = ' '.join(temp) #joins them words into a single string
 
-            if i == 0:
+            if i == 0: #on the first pass it will append the state to starters
                 self.starters.append(temp)
-            elif i == len(sent) - 1:
+            elif i == len(sent) - self.n: #on the last pass it will append the state to stoppers
                 self.stoppers.append(temp)
-                if temp not in self.brainGraph:
+                if temp not in self.brainGraph: #on the last pass it will also add EOL to the state's successors
                     self.brainGraph[temp] = ["EOL"]
                 else:
-                    self.brainGraph[temp] += ["EOL"] #innefficient becuase it creates a new string
+                    self.brainGraph[temp] += ["EOL"] #innefficient because it creates a new string but idc
 
-            if i < len(sent) - self.n:
+            if i < len(sent) - self.n: #on every pass but the last it will add a successor
                 if temp not in self.brainGraph:
-                    self.brainGraph[temp] = [sent[i + self.n]]
+                    self.brainGraph[temp] = [sent[i + self.n]] #i+self.n because it needs the word n after the i (the first word in the state)
                 else:
                     self.brainGraph[temp] += [sent[i + self.n]]
 
@@ -171,7 +173,10 @@ class Babbler:
         If n=3, then the n-gram 'the dog dances' is followed by 'quickly' one time, and 'with' two times.
         If the given state never occurs, return an empty list.
         """
-        return self.brainGraph[ngram]
+        if self.brainGraph[ngram]:
+            return self.brainGraph[ngram]
+        else:
+            return []
     
 
     def get_all_ngrams(self):
@@ -190,10 +195,7 @@ class Babbler:
         because ngrams with no successor words must not have occurred in the training sentences.
         Probably a one-line method.
         """
-        if ngram not in self.brainGraph:
-            return False
-
-        if len(self.brainGraph[ngram]) == 1 and  self.brainGraph[ngram] == 'EOL':
+        if ngram not in self.brainGraph: #if the ngram isnt in the dict then it wont have sucessors
             return False
         else:
             return True
@@ -266,7 +268,7 @@ class Babbler:
 
 
 # nothing to change here; read, understand, move along
-def main(n=2, filename='tests/test3.txt', num_sentences=5):
+def main(n=2, filename='tests/blake-poems.txt', num_sentences=5):
     """
     Simple test driver.
     """
@@ -300,8 +302,8 @@ if __name__ == '__main__':
     print("Entered arguments: ",sys.argv)
     sys.argv.pop(0) # remove the first parameter, which should be babbler.py, the name of the script
     # -------default values -----------
-    n = 2
-    filename = 'tests/test3.txt'
+    n = 4
+    filename = 'tests/blake-poems.txt'
     num_sentences = 5
     #----------------------------------
     if len(sys.argv) > 0: # if any argumetns are passed, first is assumed to be n
