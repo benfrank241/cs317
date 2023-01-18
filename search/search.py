@@ -87,17 +87,88 @@ def depthFirstSearch(problem: SearchProblem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # print("Start:", problem.getStartState())
+    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+
+    visited = {}
+    toBeVisited = util.PriorityQueue()
+    start = problem.getStartState()
+    toBeVisited.push((start, None, None), 0)
+    depth = 0
+
+    while not toBeVisited.isEmpty():
+        state, prevState, prevAction = toBeVisited.pop()
+        if state in visited:
+            continue
+        visited[state] = (prevState, prevAction)
+        if problem.isGoalState(state):
+            path = []
+            while prevState != None:
+                path.append(prevAction)
+                prevState, prevAction = visited[prevState]
+            path.reverse()
+            print(path)
+            return path
+        for nextState, action, cost in problem.getSuccessors(state):
+            if nextState not in visited:
+                priority = depth+1
+                toBeVisited.push((nextState, state, action), priority)
+    return None
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    visited = {}
+    toBeVisited = util.Queue()
+    start = problem.getStartState()
+    toBeVisited.push((start, None, None))
+
+    while not toBeVisited.isEmpty():
+        state, prevState, prevAction = toBeVisited.pop()
+        if state in visited:
+            continue
+        visited[state] = (prevState, prevAction)
+        if problem.isGoalState(state):
+            path = []
+            while prevState != None:
+                path.append(prevAction)
+                prevState, prevAction = visited[prevState]
+            path.reverse()
+            print(path)
+            return path
+        for nextState, action, cost in problem.getSuccessors(state):
+            if nextState not in visited:
+                toBeVisited.push((nextState, state, action))
+    return None
+
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    visited = {}
+    toBeVisited = util.PriorityQueue()
+    start = problem.getStartState()
+    toBeVisited.push((start, None, None), 0)
+
+    while not toBeVisited.isEmpty():
+        state, prevState, prevAction = toBeVisited.pop()
+        if state in visited:
+            continue
+        visited[state] = (prevState, prevAction)
+        if problem.isGoalState(state):
+            path = []
+            while prevState != None:
+                path.append(prevAction)
+                prevState, prevAction = visited[prevState]
+            path.reverse()
+            print(path)
+            return path
+        for nextState, action, cost in problem.getSuccessors(state):
+            if nextState not in visited:
+                toBeVisited.push((nextState, state, action), cost)
+    return None
 
 def nullHeuristic(state, problem=None):
     """
