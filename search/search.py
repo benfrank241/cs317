@@ -91,31 +91,32 @@ def depthFirstSearch(problem: SearchProblem):
     # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
-
     visited = {}
     toBeVisited = util.PriorityQueue()
     start = problem.getStartState()
-    toBeVisited.push((start, None, None), 0)
-    depth = 0
+    toBeVisited.push((start, None, None, 0), 0)
 
     while not toBeVisited.isEmpty():
-        state, prevState, prevAction = toBeVisited.pop()
-        if state in visited:
+        state, prevState, prevAction, pathCost = toBeVisited.pop()
+        if state in visited and visited[state] <= pathCost:
             continue
-        visited[state] = (prevState, prevAction)
+        visited[state] = pathCost
         if problem.isGoalState(state):
             path = []
             while prevState != None:
                 path.append(prevAction)
                 prevState, prevAction = visited[prevState]
             path.reverse()
-            print(path)
             return path
         for nextState, action, cost in problem.getSuccessors(state):
             if nextState not in visited:
-                priority = depth+1
-                toBeVisited.push((nextState, state, action), priority)
+                priority = pathCost + cost  # the cost of the path to the next state
+                toBeVisited.push((nextState, state, action, priority), priority)
+            elif visited[nextState] > pathCost + cost:
+                priority = pathCost + cost
+                toBeVisited.push((nextState, state, action, priority), priority)
     return None
+
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
