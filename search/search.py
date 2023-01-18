@@ -92,29 +92,26 @@ def depthFirstSearch(problem: SearchProblem):
     # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
     visited = {}
-    toBeVisited = util.PriorityQueue()
+    toBeVisited = util.Stack()
     start = problem.getStartState()
-    toBeVisited.push((start, None, None, 0), 0)
+    toBeVisited.push((start, None, None))
 
     while not toBeVisited.isEmpty():
-        state, prevState, prevAction, pathCost = toBeVisited.pop()
-        if state in visited and visited[state] <= pathCost:
+        state, prevState, prevAction = toBeVisited.pop()
+        if state in visited:
             continue
-        visited[state] = pathCost
+        visited[state] = (prevState, prevAction)
         if problem.isGoalState(state):
             path = []
-            while prevState != None:
+            while prevState:
                 path.append(prevAction)
                 prevState, prevAction = visited[prevState]
             path.reverse()
+            print(path)
             return path
         for nextState, action, cost in problem.getSuccessors(state):
             if nextState not in visited:
-                priority = pathCost + cost  # the cost of the path to the next state
-                toBeVisited.push((nextState, state, action, priority), priority)
-            elif visited[nextState] > pathCost + cost:
-                priority = pathCost + cost
-                toBeVisited.push((nextState, state, action, priority), priority)
+                toBeVisited.push((nextState, state, action))
     return None
 
 
