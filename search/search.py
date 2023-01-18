@@ -133,7 +133,7 @@ def breadthFirstSearch(problem: SearchProblem):
         visited[state] = (prevState, prevAction)
         if problem.isGoalState(state):
             path = []
-            while prevState != None:
+            while prevState:
                 path.append(prevAction)
                 prevState, prevAction = visited[prevState]
             path.reverse()
