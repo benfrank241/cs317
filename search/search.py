@@ -148,24 +148,24 @@ def uniformCostSearch(problem: SearchProblem):
     visited = {}
     toBeVisited = util.PriorityQueue()
     start = problem.getStartState()
-    toBeVisited.push((start, None, None), 0)
+    toBeVisited.push((start, None, None, 0), 0)
 
     while not toBeVisited.isEmpty():
-        state, prevState, prevAction = toBeVisited.pop()
+        state, prevState, prevAction, cost = toBeVisited.pop()
         if state in visited:
             continue
         visited[state] = (prevState, prevAction)
         if problem.isGoalState(state):
             path = []
-            while prevState != None:
+            while prevState:
                 path.append(prevAction)
                 prevState, prevAction = visited[prevState]
             path.reverse()
             print(path)
             return path
-        for nextState, action, cost in problem.getSuccessors(state):
+        for nextState, action, stepCost in problem.getSuccessors(state):
             if nextState not in visited:
-                toBeVisited.push((nextState, state, action), cost)
+                toBeVisited.push((nextState, state, action, cost+stepCost), cost + stepCost)
     return None
 
 def nullHeuristic(state, problem=None):
@@ -177,8 +177,28 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    visited = {}
+    toBeVisited = util.PriorityQueue()
+    start = problem.getStartState()
+    toBeVisited.push((start, None, None, 0), 0 + heuristic(start, problem))
+
+    while not toBeVisited.isEmpty():
+        state, prevState, prevAction, cost = toBeVisited.pop()
+        if state in visited:
+            continue
+        visited[state] = (prevState, prevAction)
+        if problem.isGoalState(state):
+            path = []
+            while prevState:
+                path.append(prevAction)
+                prevState, prevAction = visited[prevState]
+            path.reverse()
+            print(path)
+            return path
+        for nextState, action, stepCost in problem.getSuccessors(state):
+            if nextState not in visited:
+                toBeVisited.push((nextState, state, action, cost+stepCost), cost + stepCost + heuristic(nextState, problem))
+    return None
 
 
 # Abbreviations
