@@ -165,7 +165,7 @@ def uniformCostSearch(problem: SearchProblem):
             return path
         for nextState, action, stepCost in problem.getSuccessors(state):
             if nextState not in visited:
-                toBeVisited.push((nextState, state, action, cost+stepCost), cost + stepCost)
+                toBeVisited.push((nextState, state, action, cost + stepCost), cost + stepCost)
     return None
 
 def nullHeuristic(state, problem=None):
