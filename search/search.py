@@ -126,19 +126,19 @@ def breadthFirstSearch(problem: SearchProblem):
 
     while not toBeVisited.isEmpty():
         state, prevState, prevAction = toBeVisited.pop()
-        if state in visited:
+        if str(state) in visited:
             continue
-        visited[state] = (prevState, prevAction)
+        visited[str(state)] = (prevState, prevAction)
         if problem.isGoalState(state):
             path = []
             while prevState:
                 path.append(prevAction)
-                prevState, prevAction = visited[prevState]
+                prevState, prevAction = visited[str(prevState)]
             path.reverse()
             print(path)
             return path
         for nextState, action, cost in problem.getSuccessors(state):
-            if nextState not in visited:
+            if str(nextState) not in visited:
                 toBeVisited.push((nextState, state, action))
     return None
 

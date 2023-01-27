@@ -291,28 +291,31 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
-        #need to keep track of corners (i think)
+        "*** YOUR CODE HERE ***"''
+        # self.numFood = startingGameState.getNumFood()
+        # self._visited, self._visitedlist, self._expanded = {}, [], 0
+        self.cornersSearched = []
+
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
         "*** YOUR CODE HERE ***"
-        return self.startingPosition
+        return (self.startingPosition, self.cornersSearched)
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        #if all corners are visited
+        if state[0] in self.corners:
+            if state[0] not in state[1]:
+                state[1].append(state[0])
+            if len(state[1]) == 4:
+                return True
+            return False
 
-        if state not in self._visited:
-            self._visited[state] = True
-            self._visitedlist.append(state)
-
-        util.raiseNotDefined()
 
     def getSuccessors(self, state: Any):
         """
@@ -327,31 +330,19 @@ class CornersProblem(search.SearchProblem):
 
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
-
             "*** YOUR CODE HERE ***"
-            x, y = state
+            x, y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             if not self.walls[nextx][nexty]:
                 nextState = (nextx, nexty)
-                cost = self.costFn(nextState)
-                successors.append((nextState, action, cost))
-                #TODO: how many corners visited
-            # if state in self.corners:
-            #     corner append
+                if nextState in self.corners and nextState not in state[1]:
+                    successors.append(((nextState, state[1]+[nextState]), action, 1))
+                else:
+                    successors.append(((nextState, state[1]), action, 1))
 
         # Bookkeeping for display purposes
         self._expanded += 1  # DO NOT CHANGE
-        if state not in self._visited:
-            self._visited[state] = True
-            self._visitedlist.append(state)
-
         return successors
 
     def getCostOfActions(self, actions):
@@ -385,7 +376,33 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    if problem.isGoalState(state):
+        return 0  # heuristic always returns 0 for the goal state
+
+        # The heuristic here lists all the corners not yet visited and evaluates the current move according to the total cost it would need to visit every ->
+        # -> corner of the list, going always to the closer one. Thus, it is well informed on the total cost.
+
+    not_visited = []
+    for corner in corners:
+        if corner not in state[1]:
+            not_visited.append(corner)
+
+    total_cost = 0
+    current_pos = state[0]
+    while len(not_visited) > 0:
+        min_distance = 0
+        index = -1
+        for i in range(len(not_visited)):
+            distance = util.manhattanDistance(current_pos, not_visited[i])
+            if min_distance == 0 or min_distance > distance:
+                min_distance = distance
+                index = i
+        total_cost += min_distance
+        current_pos = not_visited[index]
+        not_visited.remove(not_visited[index])
+
+    # return total cost of path computed above
+    return abs(total_cost)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
