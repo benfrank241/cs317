@@ -108,7 +108,7 @@ def depthFirstSearch(problem: SearchProblem):
                 path.append(prevAction)
                 prevState, prevAction = visited[prevState]
             path.reverse()
-            print(path)
+            # print(path)
             return path
         for nextState, action, cost in problem.getSuccessors(state):
             if nextState not in visited:
@@ -135,7 +135,7 @@ def breadthFirstSearch(problem: SearchProblem):
                 path.append(prevAction)
                 prevState, prevAction = visited[str(prevState)]
             path.reverse()
-            print(path)
+            # print(path)
             return path
         for nextState, action, cost in problem.getSuccessors(state):
             if str(nextState) not in visited:
@@ -162,7 +162,7 @@ def uniformCostSearch(problem: SearchProblem):
                 path.append(prevAction)
                 prevState, prevAction = visited[prevState]
             path.reverse()
-            print(path)
+            # print(path)
             return path
         for nextState, action, stepCost in problem.getSuccessors(state):
             if nextState not in visited:
@@ -185,19 +185,19 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
 
     while not toBeVisited.isEmpty():
         state, prevState, prevAction, cost = toBeVisited.pop()
-        if state in visited:
+        if str(state) in visited:
             continue
-        visited[state] = (prevState, prevAction)
+        visited[str(state)] = (prevState, prevAction)
         if problem.isGoalState(state):
             path = []
             while prevState:
                 path.append(prevAction)
-                prevState, prevAction = visited[prevState]
+                prevState, prevAction = visited[str(prevState)]
             path.reverse()
-            print(path)
+            # print(path)
             return path
         for nextState, action, stepCost in problem.getSuccessors(state):
-            if nextState not in visited:
+            if str(nextState) not in visited:
                 toBeVisited.push((nextState, state, action, cost+stepCost), cost + stepCost + heuristic(nextState, problem))
     return None
 
