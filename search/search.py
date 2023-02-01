@@ -182,26 +182,23 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     toBeVisited = util.PriorityQueue()
     start = problem.getStartState()
     toBeVisited.push((start, None, None, 0), 0 + heuristic(start, problem))
-
     while not toBeVisited.isEmpty():
         state, prevState, prevAction, cost = toBeVisited.pop()
-        if str(state) in visited:
+        if state in visited:
             continue
-        visited[str(state)] = (prevState, prevAction)
+        visited[state] = (prevState, prevAction)
         if problem.isGoalState(state):
             path = []
             while prevState:
                 path.append(prevAction)
-                prevState, prevAction = visited[str(prevState)]
+                prevState, prevAction = visited[prevState]
             path.reverse()
             # print(path)
             return path
         for nextState, action, stepCost in problem.getSuccessors(state):
-            if str(nextState) not in visited:
+            if nextState not in visited:
                 toBeVisited.push((nextState, state, action, cost+stepCost), cost + stepCost + heuristic(nextState, problem))
     return None
-
-
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch

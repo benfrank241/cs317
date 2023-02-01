@@ -304,7 +304,7 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         #state[0] is the current pos, state[1] is a list of corners searched
         #had to tweak my bfs by changing the list into a string, because a list isn't hashable
-        return self.startingPosition, self.cornersSearched
+        return (self.startingPosition, self.cornersSearched)
 
     def isGoalState(self, state: Any):
         """
@@ -394,7 +394,7 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
         position = toVisit[next]
         toVisit.pop(next)
 
-    return abs(cost)
+    return cost
 
 
 class AStarCornersAgent(SearchAgent):
@@ -407,7 +407,6 @@ class FoodSearchProblem:
     """
     A search problem associated with finding the a path that collects all of the
     food (dots) in a Pacman game.
-
     A search state in this problem is a tuple ( pacmanPosition, foodGrid ) where
       pacmanPosition: a tuple (x,y) of integers specifying Pacman's position
       foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food
@@ -462,24 +461,19 @@ class AStarFoodSearchAgent(SearchAgent):
 def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     Your heuristic for the FoodSearchProblem goes here.
-
     This heuristic must be consistent to ensure correctness.  First, try to come
     up with an admissible heuristic; almost all admissible heuristics will be
     consistent as well.
-
     If using A* ever finds a solution that is worse uniform cost search finds,
     your heuristic is *not* consistent, and probably not admissible!  On the
     other hand, inadmissible or inconsistent heuristics may find optimal
     solutions, so be careful.
-
     The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a Grid
     (see game.py) of either True or False. You can call foodGrid.asList() to get
     a list of food coordinates instead.
-
     If you want access to info like walls, capsules, etc., you can query the
     problem.  For example, problem.walls gives you a Grid of where the walls
     are.
-
     If you want to *store* information to be reused in other calls to the
     heuristic, there is a dictionary called problem.heuristicInfo that you can
     use. For example, if you only want to count the walls once and store that
@@ -488,9 +482,29 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    food = foodGrid.asList()
+
     "*** YOUR CODE HERE ***"
-    pass
+    foodList = foodGrid.asList()
+
+    total = 0
+    for i in foodList:
+        # Calculate the distance between pacman and the food
+        foodPos = position + i
+        # Check if the particular distance has been checked already
+        if foodPos in problem.heuristicInfo:
+            dis = problem.heuristicInfo[foodPos]
+        else:
+            #mazeDistance as defined at the bottom of file
+            dis = mazeDistance(position, i, problem.startingGameState)
+            # Store the calculated distance in the heuristicInfo dictionary
+            problem.heuristicInfo[foodPos] = dis
+
+        # Update the max distance if the current distance is greater than the previous max distance
+        total = max(dis, total)
+
+    # Return the max distance
+    return total
+
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -521,20 +535,16 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        #call shortest path function
-        pass
+        return search.uniformCostSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
     A search problem for finding a path to any food.
-
     This search problem is just like the PositionSearchProblem, but has a
     different goal test, which you need to fill in below.  The state space and
     successor function do not need to be changed.
-
     The class definition above, AnyFoodSearchProblem(PositionSearchProblem),
     inherits the methods of the PositionSearchProblem.
-
     You can use this search problem to help you fill in the findPathToClosestDot
     method.
     """
@@ -558,15 +568,14 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        pass
+        return (x,y) in self.food.asList()
+
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
     Returns the maze distance between any two points, using the search functions
     you have already built. The gameState can be any game state -- Pacman's
     position in that state is ignored.
-
     Example usage: mazeDistance( (2,4), (5,6), gameState)
-
     This might be a useful helper function for your ApproximateSearchAgent.
     """
     x1, y1 = point1
