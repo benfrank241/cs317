@@ -10,8 +10,8 @@
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
-
+import game
+import pacman
 from util import manhattanDistance
 from game import Directions
 import random, util
@@ -68,13 +68,51 @@ class ReflexAgent(Agent):
         """
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
+        ghostPos = currentGameState.getGhostPositions()
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
+        # print(successorGameState, newPos, newFood, newGhostStates, newScaredTimes)
+        # print(ghostPos)
+
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+
+        if successorGameState.isWin():
+            return 100000
+        #go after the food unless the ghost is close then run away
+        currScore = successorGameState.getScore()
+        score = 0
+
+        # if a ghost is within x manhattan distance, run away
+        ghostDisToMan = []
+        for i in ghostPos:
+            ghostDisToMan.append(manhattanDistance(newPos, i))
+
+        if min(ghostDisToMan) < 5:
+            return -1000000
+
+        #distance to food
+        fList = newFood.asList()
+        foodDisToMan = []
+        #for loop gets the closest food and returns a higher score in relation to how close the food is
+        for i in fList:
+            foodDisToMan.append(manhattanDistance(newPos, i))
+        #-1 so that the min found gives the least amount of negative points
+        #a food that is 10 away will have a score of -10 where food 1 away will return -1 score
+        score += currScore - 0.1*min(foodDisToMan)
+
+
+
+
+        # if newScaredTimes > 0:
+
+        # print(ghostDistance)
+        # print(ghostDisToMan)
+        # print(foodDisToMan)
+        # input("pause")
+        return score
 
 def scoreEvaluationFunction(currentGameState):
     """
