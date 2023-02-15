@@ -161,66 +161,61 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        numGhosts = gameState.getNumAgents() - 1
-        pacmanIndex = 0
+        #value function that determines whether to call max or min based on the agent's number
+        def value(state, newState, depth, agent):
+            agents = state.getNumAgents()
+            #if agent is pacman, call max
+            if agent + 1 == agents:
+                return maxValue(newState, depth+1) #returns the next hypothetical state, increased depth of 1
+            #else call min
+            else:
+                return minValue(newState, depth, agent+1) #returns the next hypothetical state, same depth, and next agent (ghost)
 
-        # checks if game is over
-        def endCheck(gameState, actions, depth):
-            if gameState.isWin() or gameState.isLose():
-                return True
-            elif len(actions) == 0 or depth == self.depth:
-                return True
-            return False
 
-        # for action in gameState.getLegalActions(pacmanIndex):
-        #     #call minVal for everyghost
-        #     value(state, action)
-        #     print(action)
-        # input("p")
+        def maxValue(state, depth): #agent will always be 0 so no need to pass it in
+            #get pacman's moves and initialize v as -inf
+            moves, v = state.getLegalActions(0), -9999999
+            #if the moves or gameState are terminal, return the utility of the state          
+            if gameState.isWin() or gameState.isLose() or len(moves) == 0 or depth == self.depth:
+                return (self.evaluationFunction(state), None)            
 
-        # def value(state):
-        #     #if the state is a terminal state: return the state’s utility
-        #     for i in range(gameState.getNumAgents()):
-        #         if i == 0:
-        #             return maxValue(state)
-        #         else:
-        #             return minValue(state)
+            #(for each successor of state)for each move, generate a new state and call value to get the utility of the state                               
+            for move in moves:
+                #generate the successor state
+                successorState = state.generateSuccessor(0, move)
+                #get the min utility of the successor state
+                successorValue, _ = minValue(successorState, depth, 1) #1 is always ghost
 
-        def findMaxValue(currState, depth, agent):
-            # get all the actions that pacman can take (will only be pacman cause it's the only maxagent)
-            actions = currState.getLegalActions(agent)
-            # if the state is a terminal state: return the state’s utility
-            if endCheck(currState, depth, actions):
-                return (self.evaluateState(currState), None)
+                #v = max(v, successorValue). But we also need to keep track of the action that led to the max value
+                v = max(v, successorValue)
+                if v == successorValue:
+                    maxAction = move
+            return (v, maxAction)
 
-            # initialize max value and best action
-            v = float("-inf")
-            best_action = None
 
-            for action in actions:
-                # generate new state
-                newState = currState.generateSuccessor(agent, action)
-                # find min among successor states bc that's what minagent will pick
-                value, _ = findMinValue(newState, depth, agent + 1)
-                # If the value of the new state is greater than the current maximum value, update the maximum value and best action
-                if value > v:
-                    v = value
-                    best_action = action
+        def minValue(state, depth, agent):
+            #get ghost's moves and initialize v as inf
+            moves, v = state.getLegalActions(agent), 9999999
+            #if the moves or gameState are terminal, return the utility of the state
+            if gameState.isWin() or gameState.isLose() or len(moves) == 0 or depth == self.depth:
+                return (self.evaluationFunction(state), None)
+            
+            #(for each successor of state)for each move, generate a new state and call value to get the utility of the state
+            for move in moves:
+                #generate the successor state
+                successorState = state.generateSuccessor(agent, move)
+                #get the value of the next agent (this will recursively call min or max when it's the last agent)
+                successorValue, _ = value(state, successorState, depth, agent)
 
-            return (v, best_action)
+                #v = min(v, successorValue). But we also need to keep track of the action that led to the min value
+                v = min(v, successorValue)
+                if v == successorValue:
+                    minAction = move
+            return (v, minAction)
 
-        def findMinValue(currState, depth, agent):
-            # get all the actions that pacman can take (will only be pacman cause it's the only maxagent)
-            actions = currState.getLegalActions(agent)
-            # if the state is a terminal state: return the state’s utility
-            if endCheck(currState, depth, actions):
-                return (self.evaluateState(currState), None)
+        #driver with the initial state and depth of 0, maxValue bc first agent is pacman, [1] bc we only want the action
+        return maxValue(gameState, 0)[1]
 
-            v = 9999999
-            worst_action = None
-
-            for action in actions:
-                newState = currState.generateSuccessor(agent, action)
                 
 
 
@@ -238,6 +233,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+        print("OUTDATED FOLDER, DOCS > UPDATEDCS317")
         util.raiseNotDefined()
 
 
