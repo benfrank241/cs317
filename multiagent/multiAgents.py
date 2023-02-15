@@ -18,6 +18,7 @@ import random, util
 
 from game import Agent
 
+
 class ReflexAgent(Agent):
     """
       A reflex agent chooses an action at each choice point by examining
@@ -27,7 +28,6 @@ class ReflexAgent(Agent):
       it in any way you see fit, so long as you don't touch our method
       headers.
     """
-
 
     def getAction(self, gameState):
         """
@@ -45,7 +45,7 @@ class ReflexAgent(Agent):
         scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
         bestScore = max(scores)
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
-        chosenIndex = random.choice(bestIndices) # Pick randomly among the best
+        chosenIndex = random.choice(bestIndices)  # Pick randomly among the best
 
         "Add more of your code here if you want to"
 
@@ -81,7 +81,7 @@ class ReflexAgent(Agent):
 
         if successorGameState.isWin():
             return 100000
-        #go after the food unless the ghost is close then run away
+        # go after the food unless the ghost is close then run away
         currScore = successorGameState.getScore()
         score = 0
 
@@ -93,26 +93,18 @@ class ReflexAgent(Agent):
         if min(ghostDisToMan) < 5:
             return -1000000
 
-        #distance to food
+        # distance to food
         fList = newFood.asList()
         foodDisToMan = []
-        #for loop gets the closest food and returns a higher score in relation to how close the food is
+        # for loop gets the closest food and returns a higher score in relation to how close the food is
         for i in fList:
             foodDisToMan.append(manhattanDistance(newPos, i))
-        #-1 so that the min found gives the least amount of negative points
-        #a food that is 10 away will have a score of -10 where food 1 away will return -1 score
-        score += currScore - 0.1*min(foodDisToMan)
+        # -0.1 so that the min found gives the least amount of negative points
+        # a food that is 10 away will have a score of -10 where food 1 away will return -1 score
+        score += currScore - 0.1 * min(foodDisToMan)
 
-
-
-
-        # if newScaredTimes > 0:
-
-        # print(ghostDistance)
-        # print(ghostDisToMan)
-        # print(foodDisToMan)
-        # input("pause")
         return score
+
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -123,6 +115,7 @@ def scoreEvaluationFunction(currentGameState):
       (not reflex agents).
     """
     return currentGameState.getScore()
+
 
 class MultiAgentSearchAgent(Agent):
     """
@@ -139,10 +132,11 @@ class MultiAgentSearchAgent(Agent):
       is another abstract class.
     """
 
-    def __init__(self, evalFn = 'scoreEvaluationFunction', depth = '2'):
-        self.index = 0 # Pacman is always agent index 0
+    def __init__(self, evalFn='scoreEvaluationFunction', depth='2'):
+        self.index = 0  # Pacman is always agent index 0
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
+
 
 class MinimaxAgent(MultiAgentSearchAgent):
     """
@@ -167,7 +161,72 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        numGhosts = gameState.getNumAgents() - 1
+        pacmanIndex = 0
+
+        # checks if game is over
+        def endCheck(gameState, actions, depth):
+            if gameState.isWin() or gameState.isLose():
+                return True
+            elif len(actions) == 0 or depth == self.depth:
+                return True
+            return False
+
+        # for action in gameState.getLegalActions(pacmanIndex):
+        #     #call minVal for everyghost
+        #     value(state, action)
+        #     print(action)
+        # input("p")
+
+        # def value(state):
+        #     #if the state is a terminal state: return the state’s utility
+        #     for i in range(gameState.getNumAgents()):
+        #         if i == 0:
+        #             return maxValue(state)
+        #         else:
+        #             return minValue(state)
+
+        def findMaxValue(currState, depth, agent):
+            # get all the actions that pacman can take (will only be pacman cause it's the only maxagent)
+            actions = currState.getLegalActions(agent)
+            # if the state is a terminal state: return the state’s utility
+            if endCheck(currState, depth, actions):
+                return (self.evaluateState(currState), None)
+
+            # initialize max value and best action
+            v = float("-inf")
+            best_action = None
+
+            for action in actions:
+                # generate new state
+                newState = currState.generateSuccessor(agent, action)
+                # find min among successor states bc that's what minagent will pick
+                value, _ = findMinValue(newState, depth, agent + 1)
+                # If the value of the new state is greater than the current maximum value, update the maximum value and best action
+                if value > v:
+                    v = value
+                    best_action = action
+
+            return (v, best_action)
+
+        def findMinValue(currState, depth, agent):
+            # get all the actions that pacman can take (will only be pacman cause it's the only maxagent)
+            actions = currState.getLegalActions(agent)
+            # if the state is a terminal state: return the state’s utility
+            if endCheck(currState, depth, actions):
+                return (self.evaluateState(currState), None)
+
+            v = 9999999
+            worst_action = None
+
+            for action in actions:
+                newState = currState.generateSuccessor(agent, action)
+                
+
+
+
+
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -180,6 +239,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -196,6 +256,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
+
 def betterEvaluationFunction(currentGameState):
     """
       Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
@@ -206,6 +267,6 @@ def betterEvaluationFunction(currentGameState):
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
+
 # Abbreviation
 better = betterEvaluationFunction
-
